@@ -1,97 +1,144 @@
 package com.example.feednoticias_pdm;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.bluetooth.BluetoothHidDeviceAppSdpSettings;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class login extends Activity {
 
-    private Button b1;
-    private TextView tv1, tv2;
+    private Button b1,b2;
+    private TextView tv, tv1, tv2, tv3;
     private EditText et1, et2;
-    private LinearLayout ll;
+    private RelativeLayout relativeLayout;
 
-    @SuppressLint("ResourceType")
+
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ll = new LinearLayout(this);
-        ll.setOrientation(LinearLayout.VERTICAL);
+        Resources r = getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
 
+        relativeLayout = new RelativeLayout(this);
 
-        b1 = new Button(this);
-        b1.setText("Login");
+        //textView Título
+        tv = new TextView(this);
+        tv.setId(View.generateViewId());
+        tv.setText("Login");
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        tv.setTextSize(70);
+        layoutParams.setMargins(100, 10,0,0);
+        relativeLayout.addView(tv, layoutParams);
 
-        et1 = new EditText(this);
-        et2 = new EditText(this);
+        //textView1 Email
         tv1 = new TextView(this);
+        tv1.setId(View.generateViewId());
+        tv1.setText("E-mail:");
+        RelativeLayout.LayoutParams lp0 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lp0.setMargins(120, 250,0,0);
+        relativeLayout.addView(tv1, lp0);
+
+        //editText Email
+        et1 = new EditText(this);
+        et1.setId(View.generateViewId());
+        et1.setWidth(px);
+        et1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        lp.addRule(RelativeLayout.BELOW, tv1.getId());
+        relativeLayout.addView(et1, lp);
+
+        //textView2 Senha
         tv2 = new TextView(this);
+        tv2.setId(View.generateViewId());
+        tv2.setText("Senha:");
+        RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp2.addRule(RelativeLayout.BELOW, et1.getId());
+        lp2.setMargins(120, 30,0,0);
+        relativeLayout.addView(tv2, lp2);
 
+        //editText Senha
+        et2 = new EditText(this);
+        et2.setId(View.generateViewId());
+        et2.setWidth(px);
+        et2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lp3.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        lp3.addRule(RelativeLayout.BELOW, tv2.getId());
 
-        b1.setId(1);
-        et1.setId(2); //login
-        et2.setId(3);  //senha
-        tv1.setId(4);
-        tv2.setId(5);
+        relativeLayout.addView(et2, lp3);
 
-
+        //botão login
+        b1 = new Button(this);
+        b1.setId(View.generateViewId());
+        b1.setText("Login");
         RelativeLayout.LayoutParams buttonParams =
                 new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
-
         buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        buttonParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        buttonParams.addRule(RelativeLayout.BELOW, et2.getId());
+        relativeLayout.addView(b1, buttonParams);
 
-        RelativeLayout.LayoutParams textParams =
+        //textView3 Não possui conta
+        tv3 = new TextView(this);
+        tv3.setId(View.generateViewId());
+        tv3.setText("Não possui conta. ");
+        RelativeLayout.LayoutParams lp4 = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp4.addRule(RelativeLayout.BELOW, b1.getId());
+        lp4.setMargins(120, 50,0,0);
+        relativeLayout.addView(tv3, lp4);
+
+        //botão Cadastre-se
+        b2 = new Button(this);
+        b2.setId(View.generateViewId());
+        b2.setText("Cadastre-se");
+        RelativeLayout.LayoutParams buttonParams2 =
                 new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
+        buttonParams2.addRule(RelativeLayout.ALIGN_BASELINE, tv3.getId());
+        buttonParams2.setMargins(350, 0,0,0);
+        b2.setBackground(null);
+        b2.setTextColor(Color.BLUE);
 
-        textParams.addRule(RelativeLayout.ABOVE, b1.getId());
-        textParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        textParams.setMargins(0, 0, 0, 80);
-
-        RelativeLayout.LayoutParams viewParams =
-                new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-        viewParams.addRule(RelativeLayout.ABOVE, b1.getId());
-        viewParams.addRule(RelativeLayout.ALIGN_LEFT);
-
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());
+        relativeLayout.addView(b2, buttonParams2);
 
 
-
-        tv1.setText("E-mail:");
-        tv2.setText("Senha:");
-
-        et1.setWidth(px);
-        et2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        et2.setWidth(px);
-        et2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
-
-// Adicione nossos componentes ao Leyout
-        ll.addView(tv1, viewParams);
-        ll.addView(et1, textParams);
-        ll.addView(tv2,viewParams);
-        ll.addView(et2, textParams);
-        ll.addView(b1, buttonParams);
-        setContentView(ll);
+        setContentView(relativeLayout);
 
     }
+
+
 }
 
