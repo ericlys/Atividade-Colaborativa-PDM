@@ -36,14 +36,13 @@ public class Cadastro extends Activity {
         //add toolbar
         Toolbar toolbar = new Toolbar(this);
         LinearLayout.LayoutParams toolBarParams = new LinearLayout.LayoutParams(
-                Toolbar.LayoutParams.MATCH_PARENT, 150);
+                Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT);
         toolbar.setLayoutParams(toolBarParams);
         toolbar.setBackgroundColor(Color.rgb(96,96,96));
-        toolbar.setPopupTheme(R.style.Widget_AppCompat_Light_ActionBar);
+        toolbar.setPopupTheme(R.style.Widget_AppCompat_ActionBar);
         toolbar.setVisibility(View.VISIBLE);
         toolbar.setTitle("Criar conta");
-
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_launcher_background));
+        toolbar.setNavigationIcon(android.support.v7.appcompat.R.drawable.abc_ic_ab_back_material);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
