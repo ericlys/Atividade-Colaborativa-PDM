@@ -1,9 +1,8 @@
 package com.example.feednoticias_pdm;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.bluetooth.BluetoothHidDeviceAppSdpSettings;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -14,12 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class login extends Activity {
+public class Login extends Activity {
 
     private Button b1,b2;
     private TextView tv, tv1, tv2, tv3;
@@ -134,6 +131,14 @@ public class login extends Activity {
 
         relativeLayout.addView(b2, buttonParams2);
 
+
+        //ir para tela de cadastro
+        b2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Login.this, Cadastro.class));
+            }
+        });
 
         setContentView(relativeLayout);
 
