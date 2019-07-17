@@ -99,7 +99,7 @@ public class login extends Activity {
         //botão login
         b1 = new Button(this);
         b1.setId(View.generateViewId());
-        b1.setText("Login");
+        b1.setText("Entrar");
         RelativeLayout.LayoutParams buttonParams =
                 new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT,
