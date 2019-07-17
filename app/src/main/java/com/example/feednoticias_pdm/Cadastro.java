@@ -48,6 +48,7 @@ public class Cadastro extends Activity {
             @Override
             public void onClick(View v) {
                 //What to do on back clicked
+                onBackPressed();
             }
         });
         toolbar.setTitleTextColor(Color.WHITE);
