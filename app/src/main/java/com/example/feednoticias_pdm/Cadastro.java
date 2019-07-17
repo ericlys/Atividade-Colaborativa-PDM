@@ -43,7 +43,7 @@ public class Cadastro extends Activity {
         toolbar.setVisibility(View.VISIBLE);
         toolbar.setTitle("Criar conta");
 
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.iconback));
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_launcher_background));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
