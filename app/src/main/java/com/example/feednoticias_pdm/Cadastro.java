@@ -83,7 +83,7 @@ public class Cadastro extends Activity {
         et3 = new EditText(this);
         et3.setId(View.generateViewId());
         et3.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        et3.setHint("Email");
+        et3.setHint("Senha");
         ll.addView(et3, layoutParams);
 
         //editText Confirmar Senha

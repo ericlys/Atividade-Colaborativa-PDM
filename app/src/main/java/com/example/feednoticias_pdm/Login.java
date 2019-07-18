@@ -34,6 +34,7 @@ public class Login extends Activity {
         int px = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
 
+        //criando layout
         relativeLayout = new RelativeLayout(this);
 
         //textView Título

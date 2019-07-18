@@ -23,6 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".Noticia">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category." />
+            </intent-filter>
+        </activity>
     </application>
+
+    <!--Incluímos a permissão INTERNET. Como o leitor rss buscará feeds da internet, devemos declarar essa permissão.-->
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
