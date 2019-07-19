@@ -141,6 +141,15 @@ public class Login extends Activity {
             }
         });
 
+        //autenticar e ir para tela de feed
+        b1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                // TODO: autenticar usuario antes de ir para tela de Feed
+                startActivity(new Intent(Login.this, Feed.class));
+            }
+        });
+
         setContentView(relativeLayout);
 
     }

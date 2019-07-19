@@ -1,8 +1,9 @@
 package com.example.feednoticias_pdm.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class NoticiaEntity {
+public class NoticiaEntity implements Serializable {
 
     private String titulo;
     private String descricao;
