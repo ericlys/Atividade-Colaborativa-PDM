@@ -1,6 +1,7 @@
 package com.example.feednoticias_pdm;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -75,6 +76,7 @@ public class Feed extends Activity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         // Todo: Ir para tela de perfil
+                        startActivity(new Intent(Feed.this, Perfil.class));
                         return true;
                     }
                 });
