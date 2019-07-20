@@ -1,6 +1,7 @@
 package com.example.feednoticias_pdm;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -55,6 +56,7 @@ public class Feed extends Activity {
         );
         toolbar.setLayoutParams(toolbarParams);
         toolbar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.toolbarColor)));
+        toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setTitle("Feed");
 
         // Menu
