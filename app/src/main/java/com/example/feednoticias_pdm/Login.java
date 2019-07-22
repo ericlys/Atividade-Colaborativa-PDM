@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.View;
@@ -15,6 +16,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.feednoticias_pdm.database.DatabaseHelper;
 
 public class Login extends Activity {
 
@@ -22,6 +26,7 @@ public class Login extends Activity {
     private TextView tv, tv1, tv2, tv3;
     private EditText et1, et2;
     private RelativeLayout relativeLayout;
+    private DatabaseHelper db;
 
 
 
@@ -30,6 +35,10 @@ public class Login extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //instanciar conexao com o banco de dados
+        db = new DatabaseHelper(this);
+
+        //
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
@@ -142,11 +151,18 @@ public class Login extends Activity {
         });
 
         //autenticar e ir para tela de feed
+
         b1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                final String email = et1.getText().toString(); //email
+                final String senha = et2.getText().toString(); //senha
                 // TODO: autenticar usuario antes de ir para tela de Feed
-                startActivity(new Intent(Login.this, Feed.class));
+                Boolean autenticar = db.autenticacao(email, senha);
+                if(autenticar == true){
+                    startActivity(new Intent(Login.this, Feed.class));
+                }else
+                    Toast.makeText(getApplicationContext(),"email ou senha incorretos", Toast.LENGTH_SHORT).show();
             }
         });
 
