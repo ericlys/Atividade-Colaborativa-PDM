@@ -11,13 +11,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
+
+import com.example.feednoticias_pdm.database.DatabaseHelper;
 
 public class Cadastro extends Activity {
 
+    private DatabaseHelper db;
     private Button b1;
-    private TextView tv;
     private EditText et1, et2, et3, et4;
     private LinearLayout ll;
 
@@ -31,6 +33,9 @@ public class Cadastro extends Activity {
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         ll.setOrientation(LinearLayout.VERTICAL);
         setContentView(ll);
+
+        //instanciando conexâo
+        db = new DatabaseHelper(this);
 
 
         //add toolbar
@@ -93,11 +98,42 @@ public class Cadastro extends Activity {
         et4.setHint("Confirmar senha");
         ll.addView(et4, layoutParams);
 
-        //botão login
+        //botão Cadastro
         b1 = new Button(this);
         b1.setId(View.generateViewId());
         b1.setText("Cadastrar");
         ll.addView(b1, layoutParams);
+
+        //add funcionalidade no botão cadastro
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s1 = et1.getText().toString(); //nome
+                String s2 = et2.getText().toString(); //email
+                String s3 = et3.getText().toString(); //senha
+                String s4 = et4.getText().toString(); //senha2
+                if(s1.equals("")||s2.equals("")||s3.equals("")||s4.equals("")){
+                    Toast.makeText(getApplicationContext(), "campos estão vazios",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if(s3.equals(s4)){
+                        Boolean checarEmail = db.checarEmail(s2);
+                        if(checarEmail==true){
+                            Boolean insert = db.inserir(s1,s2,s3);
+                            if(insert==true){
+                                Toast.makeText(getApplicationContext(),"Registrado com sucesso",Toast.LENGTH_SHORT).show();
+                                onBackPressed();
+                            }
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(),"Email já registrado", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    Toast.makeText(getApplicationContext(),"Senhas não correspondem", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
     }
 }
