@@ -52,7 +52,8 @@ public class NoticiaAdapter extends ArrayAdapter<NoticiaEntity> {
         atualizadoEm.setTypeface(null, Typeface.ITALIC);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         String dataFormatada = dateFormat.format(noticia.getAtualizadoEm()); // Formatando timestamp
-        atualizadoEm.setText("Atualiado em: "+dataFormatada);
+        atualizadoEm.setText("Atualiado em: " + dataFormatada);
+
         linha.addView(atualizadoEm);
 
         // Setando OnClick ao clicar no item da lista

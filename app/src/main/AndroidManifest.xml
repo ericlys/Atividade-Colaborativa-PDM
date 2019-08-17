@@ -9,6 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        
+        <service android:name=".Fetch.FetchNoticiasService"/>
+        
+        <receiver android:name=".Fetch.NoticiaAlarmReceiver"/>
+        <receiver android:name=".Feed$NoticiasReceiver"/>
+        
     <activity android:name=".Login"
         tools:ignore="WrongManifestParent">
         <intent-filter>

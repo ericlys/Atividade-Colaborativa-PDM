@@ -9,7 +9,7 @@ public class NoticiaEntity implements Serializable {
     private String descricao;
     private String texto;
     private String autor;
-    private Date atualizadoEm;
+    private Date atualizadoEm = new Date();
 
     public NoticiaEntity() {
     }
@@ -67,4 +67,6 @@ public class NoticiaEntity implements Serializable {
     public void setAtualizadoEm(Date atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
     }
+
+
 }

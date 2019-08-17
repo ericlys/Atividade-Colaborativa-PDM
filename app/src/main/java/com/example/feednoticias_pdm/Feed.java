@@ -1,11 +1,19 @@
 package com.example.feednoticias_pdm;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -13,20 +21,23 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.example.feednoticias_pdm.Fetch.NoticiaAlarmReceiver;
 import com.example.feednoticias_pdm.adapter.NoticiaAdapter;
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Feed extends Activity {
+    private static final String TAG = "Feed";
 
     private static final int MENU_CONF_ID = 1;
     private static final int MENU_PERFIL_ID = 2;
     private static final int MENU_SAIR_ID = 3;
 
     private ListView listView;
+    private BroadcastReceiver noticiasReceiver;
+    private List<NoticiaEntity> noticias = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,43 +105,76 @@ public class Feed extends Activity {
         // ListView
         listView = new ListView(this);
         ViewGroup.LayoutParams listViewParams = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
         listView.setLayoutParams(listViewParams);
 
         container.addView(toolbar);
         container.addView(listView);
 
+        // Instanciando receiver e registrando alarm repeat
+        noticiasReceiver = new NoticiasReceiver();
+        registerAlarm();
+
         rootLayout.addView(container);
         setContentView(rootLayout);
+    }
 
-        // *** APENAS PARA TESTE
-        // *** AS NOTICIAS VIRAO DE OUTRA FONTE FUTURAMENTE
-        List<NoticiaEntity> noticiaEntities = getNoticiasFromFonte();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Registrando Broadcast Receiver
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter(NoticiasReceiver.FILTER_NOTICIAS_RECEIVER);
+        manager.registerReceiver(noticiasReceiver, filter);
+    }
 
-        setNoticias(noticiaEntities);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Desregistrando Broadcast Receiver
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
+        manager.unregisterReceiver(noticiasReceiver);
+    }
+
+    private void registerAlarm() {
+        Intent intent = new Intent(this, NoticiaAlarmReceiver.class);
+        PendingIntent pending = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        long triggerAtMillis = SystemClock.elapsedRealtime()+1000; // Disparar imediatamente
+        long intervalAtMillis = 1000 * 60 * 5; // 5 minutos
+
+        alarmManager.setRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                triggerAtMillis,
+                intervalAtMillis,
+                pending
+        );
     }
 
     public void setNoticias (List<NoticiaEntity> noticias) {
+        Log.d(TAG, "setNoticias");
         listView.setAdapter(new NoticiaAdapter(this, noticias));
     }
 
-    // *** METODO APENAS PARA INSTANCIAR NOTICIAS DE TESTE
-    public List<NoticiaEntity> getNoticiasFromFonte() {
-        List<NoticiaEntity> noticias = new ArrayList<>();
+    public class NoticiasReceiver extends BroadcastReceiver {
 
-        NoticiaEntity noticiaA = new NoticiaEntity();
-        noticiaA.setTitulo("19 das 33 das vítimas de incêndio no Japão morreram no acesso ao telhado");
-        noticiaA.setDescricao("Os corpos de 19 das 33 pessoas que morreram na quinta-feira (18) em um incêndio...");
-        noticiaA.setAutor("João Almeida");
-        noticiaA.setTexto("Para compartilhar esse conteúdo, Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade dPara compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.Para compartilhar esse conteúdo, por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.e seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.por favor utilize o link https://www1.folha.uol.com.br/mercado/2019/07/bolsonaro-diz-que-multa-de-40-do-fgts-inibe-criacao-de-empregos.shtml ou as ferramentas oferecidas na página. Textos, fotos, artes e vídeos da Folha estão protegidos pela legislação brasileira sobre direito autoral. Não reproduza o conteúdo do jornal em qualquer meio de comunicação, eletrônico ou impresso, sem autorização da Folhapress (pesquisa@folhapress.com.br). As regras têm como objetivo proteger o investimento que a Folha faz na qualidade de seu jornalismo. Se precisa copiar trecho de texto da Folha para uso privado, por favor logue-se como assinante ou cadastrado.");
-        noticiaA.setAtualizadoEm(new Date());
+        // String utilizada para filtrar intent do servico de busca de noticias
+        public static final String FILTER_NOTICIAS_RECEIVER = "com.example.feednoticias_pdm.Feed.NoticiasReceiver";
 
-        noticias.add(noticiaA);
-        noticias.add(noticiaA);
-        noticias.add(noticiaA);
+        // Strings utilizadas para recuperar o conteudo vindo do servico
+        public static final String BUNDLE_KEY = "BUNDLE";
+        public static final String NOTICIAS_KEY = "NOTICIAS";
 
-        return noticias;
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getBundleExtra(BUNDLE_KEY);
+            List<NoticiaEntity> newNoticias = (List<NoticiaEntity>) bundle.getSerializable(NOTICIAS_KEY);
+            noticias.addAll(newNoticias); // Adicionando novas noticias a lista inicial
+            setNoticias(noticias);
+        }
     }
+
 }
