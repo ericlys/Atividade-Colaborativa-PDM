@@ -30,6 +30,7 @@ import android.widget.ListView;
 import com.example.feednoticias_pdm.Fetch.NoticiaAlarmReceiver;
 import com.example.feednoticias_pdm.adapter.NoticiaAdapter;
 import com.example.feednoticias_pdm.database.DatabaseHelper;
+import com.example.feednoticias_pdm.database.configuration.AccessManager;
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 
 import java.util.ArrayList;
@@ -109,9 +110,13 @@ public class Feed extends Activity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         // Todo: Desautenticar usuário antes de voltar para tela de login
-                        startActivity(new Intent(Feed.this, Login.class));
+
+                        AccessManager am = new AccessManager(Feed.this);
+                        am.remove();
+                        Intent loginIntent = new Intent(Feed.this, Login.class);
                         finish();
-                        return true;
+                        startActivity(loginIntent);
+                        return false;
                     }
                 });
 
