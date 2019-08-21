@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.feednoticias_pdm.model.NoticiaEntity;
+import com.example.feednoticias_pdm.model.UsuarioEntity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,6 +64,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(cursor.getCount()>0)return true;
         return false;
     }
+
+    public UsuarioEntity buscarUsuario(String email) {
+        UsuarioEntity usuario = new UsuarioEntity();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("Select * from usuario where email = ?", new String[]{email});
+        while(cursor.moveToNext()){
+            usuario.setEmail(cursor.getString(0));
+            usuario.setNome(cursor.getString(1));
+            usuario.setSenha(cursor.getString(2));
+        }
+        cursor.close();
+        return usuario;
+    }
+
 
     //inserindo feed no banco de dados
     public boolean addfeed(NoticiaEntity noticiaEntity){
