@@ -1,5 +1,7 @@
 package com.example.feednoticias_pdm.Fetch;
 
+import android.text.Html;
+
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 
 import org.w3c.dom.Document;
@@ -47,8 +49,8 @@ public class FetchNoticiasJornalParaiba implements FetchNoticiaStrategy {
                 String autor = autorTag.getTextContent();
 
                 NoticiaEntity noticia = new NoticiaEntity();
-                noticia.setTitulo(titulo);
-                noticia.setDescricao(sumario);
+                noticia.setTitulo(Html.fromHtml(titulo).toString());
+                noticia.setDescricao(Html.fromHtml(sumario).toString());
                 noticia.setTexto("---"); // Não possui conteudo, apenas descricao
                 noticia.setAutor(autor);
                 noticia.setAtualizadoEm(new Date());
