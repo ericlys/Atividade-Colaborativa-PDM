@@ -27,7 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("Create table usuario (email text primary key, nome text, senha text)");
-        db.execSQL("Create table feed (id int primary key autoincrement not null, titulo text, descricao text, texto text, autor text, atualizadoEm date)");
+        db.execSQL("Create table feed (id integer primary key autoincrement not null, titulo text, descricao text, texto text, autor text, atualizadoEm date)");
 
     }
 
@@ -66,10 +66,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //inserindo feed no banco de dados
     public boolean addfeed(NoticiaEntity noticiaEntity){
+        // Não insere caso a noticia ja esteja salva
+        if(contains(noticiaEntity)) return false;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("titulo", noticiaEntity.getTitulo());
-        contentValues.put("decricao", noticiaEntity.getDescricao());
+        contentValues.put("descricao", noticiaEntity.getDescricao());
         contentValues.put("texto", noticiaEntity.getTexto());
         contentValues.put("autor", noticiaEntity.getAutor());
 
@@ -80,6 +83,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long ins = db.insert("feed",null,contentValues);
         if (ins==-1)return false;
         else return true;
+    }
+
+    public boolean contains(NoticiaEntity noticia) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("Select * from feed where titulo=? and descricao=?",
+                new String[]{noticia.getTitulo(), noticia.getDescricao()});
+        return cursor.getCount()>0;
     }
 
     //buscar feed no banco

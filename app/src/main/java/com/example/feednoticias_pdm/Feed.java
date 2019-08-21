@@ -2,6 +2,9 @@ package com.example.feednoticias_pdm;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,8 +12,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +29,7 @@ import android.widget.ListView;
 
 import com.example.feednoticias_pdm.Fetch.NoticiaAlarmReceiver;
 import com.example.feednoticias_pdm.adapter.NoticiaAdapter;
+import com.example.feednoticias_pdm.database.DatabaseHelper;
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 
 import java.util.ArrayList;
@@ -31,6 +38,7 @@ import java.util.List;
 public class Feed extends Activity {
     private static final String TAG = "Feed";
 
+    private static final String NOTIFICATION_CHANNEL_ID = "com.example.feednoticias_pdm";
     private static final int MENU_CONF_ID = 1;
     private static final int MENU_PERFIL_ID = 2;
     private static final int MENU_SAIR_ID = 3;
@@ -38,6 +46,10 @@ public class Feed extends Activity {
     private ListView listView;
     private BroadcastReceiver noticiasReceiver;
     private List<NoticiaEntity> noticias = new ArrayList<>();
+
+    // id utilizado para lancar uma notificacao
+    // é incrementado por 1 a cada notificacao
+    private int notification_id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +130,18 @@ public class Feed extends Activity {
         noticiasReceiver = new NoticiasReceiver();
         registerAlarm();
 
+        // Iniciando busca de noticias pelo banco
+        Thread searchFromDB = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseHelper db = new DatabaseHelper(Feed.this);
+                List<NoticiaEntity> noticiasFromDB = db.allfeeds();
+                Log.d(TAG, "Noticias do banco: "+noticiasFromDB.size());
+                setNoticias(noticiasFromDB, false);
+            }
+        });
+        searchFromDB.start();
+
         rootLayout.addView(container);
         setContentView(rootLayout);
     }
@@ -155,9 +179,49 @@ public class Feed extends Activity {
         );
     }
 
-    public void setNoticias (List<NoticiaEntity> noticias) {
+    public void setNoticias (List<NoticiaEntity> noticias, boolean notify) {
         Log.d(TAG, "setNoticias");
         listView.setAdapter(new NoticiaAdapter(this, noticias));
+        if(notify){
+            for(NoticiaEntity n: noticias){
+                notify(n);
+            }
+        }
+    }
+
+    private void notify(NoticiaEntity noticia){
+
+        // Criando canal de notificacao
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    "notificationFeedChannel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            channel.setDescription("Canal de notificacao da aplicação de feed");
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent intent = new Intent(this, Noticia.class);
+        intent.putExtra("Noticia", noticia);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, notification_id, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(noticia.getTitulo())
+                .setContentText(noticia.getDescricao())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true); // Remove a notificação quando clicada
+
+        Notification notification = builder.build();
+
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
+        managerCompat.notify(notification_id, notification);
+        notification_id++; 
     }
 
     public class NoticiasReceiver extends BroadcastReceiver {
@@ -174,7 +238,7 @@ public class Feed extends Activity {
             Bundle bundle = intent.getBundleExtra(BUNDLE_KEY);
             List<NoticiaEntity> newNoticias = (List<NoticiaEntity>) bundle.getSerializable(NOTICIAS_KEY);
             noticias.addAll(newNoticias); // Adicionando novas noticias a lista inicial
-            setNoticias(noticias);
+            setNoticias(noticias, true);
         }
     }
 

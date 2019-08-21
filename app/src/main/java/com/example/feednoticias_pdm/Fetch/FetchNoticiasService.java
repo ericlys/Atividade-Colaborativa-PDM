@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.feednoticias_pdm.Feed;
+import com.example.feednoticias_pdm.database.DatabaseHelper;
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 
 import java.io.Serializable;
@@ -21,7 +22,7 @@ public class FetchNoticiasService extends Service {
     // Formas de busca
     FetchNoticiaStrategy array[] = {
             new FetchNoticiasDiarioDoSertao(),
-            new FetchNoticiasUirauna(),
+            // new FetchNoticiasUirauna(),
             new FetchNoticiasJornalParaiba()
     };
     List<FetchNoticiaStrategy> strategies = Arrays.asList(array);
@@ -44,16 +45,31 @@ public class FetchNoticiasService extends Service {
                     noticias.addAll(strategy.fetch());
                 }
 
-                // Salvando o resultado no intent e mandando para a atividade de feed
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(Feed.NoticiasReceiver.NOTICIAS_KEY, (Serializable) noticias);
+                // Tentando salvar noticias vindas da busca
+                // E armazenando apenas as noticias NOVAS em uma list
+                // para mandar para atividade de feed
+                DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+                List<NoticiaEntity> novasNoticias = new ArrayList<>();
+                for(NoticiaEntity n: noticias) {
+                    if(db.addfeed(n)){
+                        novasNoticias.add(n);
+                    }
+                }
 
-                Intent receiverIntent = new Intent();
-                receiverIntent.setAction(Feed.NoticiasReceiver.FILTER_NOTICIAS_RECEIVER);
-                receiverIntent.putExtra(Feed.NoticiasReceiver.BUNDLE_KEY, bundle);
+                // Caso exista novas noticias
+                if (novasNoticias.size() > 0){
 
-                Log.d(TAG, "Mandando noticias por broadcast...");
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(receiverIntent);
+                    // Salvando o resultado no intent e mandando para a atividade de feed
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(Feed.NoticiasReceiver.NOTICIAS_KEY, (Serializable) novasNoticias);
+
+                    Intent receiverIntent = new Intent();
+                    receiverIntent.setAction(Feed.NoticiasReceiver.FILTER_NOTICIAS_RECEIVER);
+                    receiverIntent.putExtra(Feed.NoticiasReceiver.BUNDLE_KEY, bundle);
+
+                    Log.d(TAG, "Mandando "+novasNoticias.size()+" noticias por broadcast...");
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(receiverIntent);
+                }
             }
         });
         thread.start();
