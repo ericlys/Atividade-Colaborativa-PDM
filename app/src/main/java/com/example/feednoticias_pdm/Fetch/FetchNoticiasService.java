@@ -21,7 +21,8 @@ public class FetchNoticiasService extends Service {
     // Formas de busca
     FetchNoticiaStrategy array[] = {
             new FetchNoticiasDiarioDoSertao(),
-            new FetchNoticiasUirauna()
+            new FetchNoticiasUirauna(),
+            new FetchNoticiasJornalParaiba()
     };
     List<FetchNoticiaStrategy> strategies = Arrays.asList(array);
 
