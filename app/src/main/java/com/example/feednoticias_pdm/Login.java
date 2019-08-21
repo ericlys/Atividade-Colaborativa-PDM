@@ -135,7 +135,7 @@ public class Login extends Activity {
                         RelativeLayout.LayoutParams.WRAP_CONTENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
         buttonParams2.addRule(RelativeLayout.ALIGN_BASELINE, tv3.getId());
-        buttonParams2.setMargins(350, 0,0,0);
+        buttonParams2.setMargins(410, 0,0,0);
         b2.setBackground(null);
         b2.setTextColor(Color.BLUE);
 
@@ -161,6 +161,7 @@ public class Login extends Activity {
                 Boolean autenticar = db.autenticacao(email, senha);
                 if(autenticar == true){
                     startActivity(new Intent(Login.this, Feed.class));
+                    finish();
                 }else
                     Toast.makeText(getApplicationContext(),"email ou senha incorretos", Toast.LENGTH_SHORT).show();
             }

@@ -97,6 +97,7 @@ public class Feed extends Activity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         // Todo: Desautenticar usuário antes de voltar para tela de login
+                        startActivity(new Intent(Feed.this, Login.class));
                         finish();
                         return true;
                     }

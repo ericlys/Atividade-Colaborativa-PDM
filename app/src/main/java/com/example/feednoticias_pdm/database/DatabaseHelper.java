@@ -27,7 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    //inserindo no banco de dados
+    //inserindo no banco de dados usuario
     public boolean inserir(String nome, String email, String senha){
      SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -39,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return true;
     }
 
-    //checar se o email existe
+    //checar se o email do usuario existe
     public Boolean checarEmail(String email){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("Select * from usuario where email=?",new String[]{email});
@@ -47,7 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return true;
     }
 
-    //Fazer autenticação;
+    //Fazer autenticação do usuario;
     public boolean autenticacao(String email, String senha){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("Select * from usuario where email=? and senha=?", new String[]{email, senha});
