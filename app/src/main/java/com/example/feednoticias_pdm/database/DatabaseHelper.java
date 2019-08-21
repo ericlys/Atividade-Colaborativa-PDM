@@ -6,6 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.feednoticias_pdm.model.NoticiaEntity;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     //nome do banco de dados
@@ -19,6 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("Create table usuario (email text primary key, nome text, senha text)");
+        db.execSQL("Create table feed (id int primary key autoincrement not null, titulo text, descricao text, texto text, autor text, atualizadoEm date)");
 
     }
 
@@ -54,6 +63,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(cursor.getCount()>0)return true;
         return false;
     }
+
+    //inserindo feed no banco de dados
+    public boolean addfeed(NoticiaEntity noticiaEntity){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("titulo", noticiaEntity.getTitulo());
+        contentValues.put("decricao", noticiaEntity.getDescricao());
+        contentValues.put("texto", noticiaEntity.getTexto());
+        contentValues.put("autor", noticiaEntity.getAutor());
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = formatter.format(noticiaEntity.getAtualizadoEm());
+
+        contentValues.put("atualizadoEm", formattedDate);
+        long ins = db.insert("feed",null,contentValues);
+        if (ins==-1)return false;
+        else return true;
+    }
+
+    //buscar feed no banco
+    public List<NoticiaEntity> allfeeds(){
+        List<NoticiaEntity> ne = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("Select * from feed order by id desc", null);
+
+        if(cursor.moveToFirst()){
+          do {
+
+              SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+              try {
+                  ne.add( new NoticiaEntity(cursor.getString(cursor.getColumnIndex("titulo")),
+                                            cursor.getString(cursor.getColumnIndex("descricao")),
+                                            cursor.getString(cursor.getColumnIndex("texto")),
+                                            cursor.getString(cursor.getColumnIndex("autor")),
+                                            formatter.parse(cursor.getString(cursor.getColumnIndex("atualizadoEm")))));
+              } catch (ParseException e) {
+                  e.printStackTrace();
+              }
+
+          }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return  ne;
+    }
+
 
 }
 
