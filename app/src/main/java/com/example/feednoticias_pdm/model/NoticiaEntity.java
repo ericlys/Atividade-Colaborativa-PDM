@@ -69,4 +69,26 @@ public class NoticiaEntity implements Serializable {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NoticiaEntity)) return false;
+
+        NoticiaEntity that = (NoticiaEntity) o;
+
+        if (titulo != null ? !titulo.equals(that.titulo) : that.titulo != null) return false;
+        if (descricao != null ? !descricao.equals(that.descricao) : that.descricao != null)
+            return false;
+        if (texto != null ? !texto.equals(that.texto) : that.texto != null) return false;
+        return autor != null ? autor.equals(that.autor) : that.autor == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = titulo != null ? titulo.hashCode() : 0;
+        result = 31 * result + (descricao != null ? descricao.hashCode() : 0);
+        result = 31 * result + (texto != null ? texto.hashCode() : 0);
+        result = 31 * result + (autor != null ? autor.hashCode() : 0);
+        return result;
+    }
 }

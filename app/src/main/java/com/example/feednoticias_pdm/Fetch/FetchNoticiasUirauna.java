@@ -1,6 +1,6 @@
 package com.example.feednoticias_pdm.Fetch;
 
-import android.util.Log;
+import android.text.Html;
 
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 
@@ -49,9 +49,9 @@ public class FetchNoticiasUirauna implements FetchNoticiaStrategy {
                 String conteudo = conteudoTag.getTextContent();
 
                 NoticiaEntity noticia = new NoticiaEntity();
-                noticia.setTitulo(titulo);
-                noticia.setDescricao(sumario);
-                noticia.setTexto(conteudo);
+                noticia.setTitulo(Html.fromHtml(titulo).toString());
+                noticia.setDescricao(Html.fromHtml(sumario).toString());
+                noticia.setTexto(Html.fromHtml(conteudo).toString());
                 noticia.setAutor("---");
                 noticia.setAtualizadoEm(new Date());
 

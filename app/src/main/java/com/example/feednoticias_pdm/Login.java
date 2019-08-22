@@ -3,6 +3,7 @@ package com.example.feednoticias_pdm;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -19,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.feednoticias_pdm.database.DatabaseHelper;
+import com.example.feednoticias_pdm.database.configuration.AccessDTO;
+import com.example.feednoticias_pdm.database.configuration.AccessManager;
+import com.example.feednoticias_pdm.model.UsuarioEntity;
 
 public class Login extends Activity {
 
@@ -33,6 +37,10 @@ public class Login extends Activity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
+
         super.onCreate(savedInstanceState);
 
         //instanciar conexao com o banco de dados
@@ -135,7 +143,7 @@ public class Login extends Activity {
                         RelativeLayout.LayoutParams.WRAP_CONTENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
         buttonParams2.addRule(RelativeLayout.ALIGN_BASELINE, tv3.getId());
-        buttonParams2.setMargins(350, 0,0,0);
+        buttonParams2.setMargins(410, 0,0,0);
         b2.setBackground(null);
         b2.setTextColor(Color.BLUE);
 
@@ -160,7 +168,22 @@ public class Login extends Activity {
                 // TODO: autenticar usuario antes de ir para tela de Feed
                 Boolean autenticar = db.autenticacao(email, senha);
                 if(autenticar == true){
-                    startActivity(new Intent(Login.this, Feed.class));
+                    //create o access data
+                    AccessDTO dto = new AccessDTO();
+                    UsuarioEntity usuario = db.buscarUsuario(email);
+                    dto.setToken(String.valueOf(usuario.getSenha()));
+                    dto.setName(usuario.getNome());
+                    dto.setEmail(usuario.getEmail());
+
+                    //save access data
+                    AccessManager tm = new AccessManager(Login.this);
+                    tm.store(dto);
+                    //forward to news list
+                    gotoNewsList();
+
+
+                   /* startActivity(new Intent(Login.this, Feed.class));
+                    finish();*/
                 }else
                     Toast.makeText(getApplicationContext(),"email ou senha incorretos", Toast.LENGTH_SHORT).show();
             }
@@ -168,6 +191,27 @@ public class Login extends Activity {
 
         setContentView(relativeLayout);
 
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AccessManager tm = new AccessManager(this);
+        // verificar se existe um token
+        // caso exista um token encaminhar para
+        // Lista de Notícias
+        if (tm.checkToken()) {
+            gotoNewsList();
+        }
+    }
+
+
+        private void gotoNewsList(){
+        Intent mudaIntent = new Intent(getApplicationContext(), Feed.class);
+        startActivity((mudaIntent));
+        finish();
     }
 
 
