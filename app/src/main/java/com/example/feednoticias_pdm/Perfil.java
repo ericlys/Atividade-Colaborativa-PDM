@@ -2,6 +2,7 @@ package com.example.feednoticias_pdm;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -17,9 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toolbar;
+import com.example.feednoticias_pdm.database.DatabaseHelper;
 
 public class Perfil extends Activity {
 
+    private DatabaseHelper db;
     private TextView tv1, tv2, tv3,tv4;
     private LinearLayout ll;
     private Button b1;
@@ -29,6 +32,9 @@ public class Perfil extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //instanciando conexâo
+        db = new DatabaseHelper(this);
 
         //criando layout principal da página
         relativeLayout = new RelativeLayout(this);
@@ -76,7 +82,7 @@ public class Perfil extends Activity {
         //textView Email
         tv2 = new TextView(this);
         tv2.setId(View.generateViewId());
-        tv2.setText("ericlysm@gmail.com");
+        tv2.setText(db.getEmail);
         tv2.setTextSize(20);
         ll.addView(tv2);
 
@@ -96,11 +102,24 @@ public class Perfil extends Activity {
         tv4.setPadding(0,0,0,100);
         ll.addView(tv4);
 
-        //botão login
+        //botão Atualizar dados
         b1 = new Button(this);
         b1.setId(View.generateViewId());
         b1.setText("Atulizar dados");
+        RelativeLayout.LayoutParams buttonParams =
+                new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+        buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        //buttonParams.addRule(RelativeLayout.BELOW, et2.getId());
         ll.addView(b1);
+
+        b1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Perfil.this, Editar.class));
+            }
+        });
 
     }
 }

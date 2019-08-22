@@ -159,7 +159,7 @@ public class Feed extends Activity {
         listView.setAdapter(new NoticiaAdapter(this, noticias));
     }
 
-    public class NoticiasReceiver extends BroadcastReceiver {
+    public class  NoticiasReceiver extends BroadcastReceiver {
 
         // String utilizada para filtrar intent do servico de busca de noticias
         public static final String FILTER_NOTICIAS_RECEIVER = "com.example.feednoticias_pdm.Feed.NoticiasReceiver";
