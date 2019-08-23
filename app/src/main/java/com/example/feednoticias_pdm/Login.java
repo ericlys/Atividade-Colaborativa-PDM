@@ -23,6 +23,7 @@ import com.example.feednoticias_pdm.database.DatabaseHelper;
 import com.example.feednoticias_pdm.database.configuration.AccessDTO;
 import com.example.feednoticias_pdm.database.configuration.AccessManager;
 import com.example.feednoticias_pdm.model.UsuarioEntity;
+import com.example.feednoticias_pdm.session.UserSession;
 
 public class Login extends Activity {
 
@@ -165,25 +166,13 @@ public class Login extends Activity {
             public void onClick(View view) {
                 final String email = et1.getText().toString(); //email
                 final String senha = et2.getText().toString(); //senha
-                // TODO: autenticar usuario antes de ir para tela de Feed
+
                 Boolean autenticar = db.autenticacao(email, senha);
                 if(autenticar == true){
-                    //create o access data
-                    AccessDTO dto = new AccessDTO();
                     UsuarioEntity usuario = db.buscarUsuario(email);
-                    dto.setToken(String.valueOf(usuario.getSenha()));
-                    dto.setName(usuario.getNome());
-                    dto.setEmail(usuario.getEmail());
+                    UserSession.startSession(usuario);
 
-                    //save access data
-                    AccessManager tm = new AccessManager(Login.this);
-                    tm.store(dto);
-                    //forward to news list
                     gotoNewsList();
-
-
-                   /* startActivity(new Intent(Login.this, Feed.class));
-                    finish();*/
                 }else
                     Toast.makeText(getApplicationContext(),"email ou senha incorretos", Toast.LENGTH_SHORT).show();
             }
@@ -210,7 +199,7 @@ public class Login extends Activity {
 
         private void gotoNewsList(){
         Intent mudaIntent = new Intent(getApplicationContext(), Feed.class);
-        startActivity((mudaIntent));
+        startActivity(mudaIntent);
         finish();
     }
 

@@ -15,6 +15,8 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.example.feednoticias_pdm.database.DatabaseHelper;
+import com.example.feednoticias_pdm.model.UsuarioEntity;
+import com.example.feednoticias_pdm.session.UserSession;
 
 public class Editar extends Activity {
 
@@ -23,11 +25,17 @@ public class Editar extends Activity {
     private EditText et1, et2, et3, et4;
     private LinearLayout ll;
 
+    private UsuarioEntity user;
 
     @TargetApi(Build.VERSION_CODES.N)
     @android.support.annotation.RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        user = UserSession.getLoggedUser();
+        if(user == null){
+            finish();
+        }
 
         ll = new LinearLayout(this);
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -36,7 +44,6 @@ public class Editar extends Activity {
 
         //instanciando conexâo
         db = new DatabaseHelper(this);
-
 
         //add toolbar
         Toolbar toolbar = new Toolbar(this);
@@ -63,32 +70,35 @@ public class Editar extends Activity {
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-        //editText Nome
-        et1 = new EditText(this);
-        et1.setId(View.generateViewId());
-        et1.setInputType(InputType.TYPE_CLASS_TEXT);
-        et1.setHint("Nome");
-        ll.addView(et1, layoutParams);
-
         //editText Email
         et2 = new EditText(this);
         et2.setId(View.generateViewId());
         et2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         et2.setHint("Email");
+        et2.setText(user.getEmail());
+        et2.setEnabled(false);
         ll.addView(et2, layoutParams);
+
+        //editText Nome
+        et1 = new EditText(this);
+        et1.setId(View.generateViewId());
+        et1.setInputType(InputType.TYPE_CLASS_TEXT);
+        et1.setHint("Nome");
+        et1.setText(user.getNome());
+        ll.addView(et1, layoutParams);
 
         //editText Senha
         et3 = new EditText(this);
         et3.setId(View.generateViewId());
         et3.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        et3.setHint("Senha");
+        et3.setHint("Nova Senha");
         ll.addView(et3, layoutParams);
 
         //editText Confirmar Senha
         et4 = new EditText(this);
         et4.setId(View.generateViewId());
         et4.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        et4.setHint("Confirmar senha");
+        et4.setHint("Confirmar nova senha");
         ll.addView(et4, layoutParams);
 
         //botão Editar
@@ -101,32 +111,31 @@ public class Editar extends Activity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String s1 = et1.getText().toString(); //nome
-                String s2 = et2.getText().toString(); //email
-                String s3 = et3.getText().toString(); //senha
-                String s4 = et4.getText().toString(); //senha2
-                if(s1.equals("")||s2.equals("")||s3.equals("")||s4.equals("")){
-                    Toast.makeText(getApplicationContext(), "campos estão vazios",Toast.LENGTH_SHORT).show();
+                String nome = et1.getText().toString(); //nome
+                String email = et2.getText().toString(); //email
+                String novaSenha = et3.getText().toString(); //senha
+                String confNovaSenha = et4.getText().toString(); //senha2
+                if(nome.equals("")){
+                    Toast.makeText(getApplicationContext(), "Nome vazio",Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                else {
-                    if(s3.equals(s4)){
-                        Boolean checarEmail = db.checarEmail(s2);
-                        if(checarEmail==true){
-                            Boolean insert = db.inserir(s1,s2,s3);
-                            if(insert==true){
-                                Toast.makeText(getApplicationContext(),"Editado com sucesso",Toast.LENGTH_SHORT).show();
-                                onBackPressed();
-                            }
-                        }
-                        else{
-                            Toast.makeText(getApplicationContext(),"Email já registrado", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    Toast.makeText(getApplicationContext(),"Senhas não correspondem", Toast.LENGTH_SHORT).show();
+
+                if(!novaSenha.equals(confNovaSenha)){
+                    Toast.makeText(getApplicationContext(), "Senhas nao correspondem", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                // Caso atualizar senha
+                if(!novaSenha.isEmpty()){
+                    user.setSenha(novaSenha);
+                }
+
+                user.setNome(nome);
+                db.atualizarConta(user);
+                Toast.makeText(getApplicationContext(), "Perfil salvo", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
-
 
     }
 }

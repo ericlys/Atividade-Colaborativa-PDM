@@ -32,6 +32,7 @@ import com.example.feednoticias_pdm.adapter.NoticiaAdapter;
 import com.example.feednoticias_pdm.database.DatabaseHelper;
 import com.example.feednoticias_pdm.database.configuration.AccessManager;
 import com.example.feednoticias_pdm.model.NoticiaEntity;
+import com.example.feednoticias_pdm.session.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,8 @@ public class Feed extends Activity {
     private static final String TAG = "Feed";
 
     private static final String NOTIFICATION_CHANNEL_ID = "com.example.feednoticias_pdm";
-    private static final int MENU_CONF_ID = 1;
-    private static final int MENU_PERFIL_ID = 2;
-    private static final int MENU_SAIR_ID = 3;
+    private static final int MENU_PERFIL_ID = 1;
+    private static final int MENU_SAIR_ID = 2;
 
     private ListView listView;
     private BroadcastReceiver noticiasReceiver;
@@ -86,14 +86,6 @@ public class Feed extends Activity {
 
         // Menu
         Menu menu = toolbar.getMenu();
-        menu.add(Menu.NONE, MENU_CONF_ID, Menu.NONE, "Configuração")
-                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        // TODO: Ir para atividade de configuracao
-                        return true;
-                    }
-                });
 
         menu.add(Menu.NONE, MENU_PERFIL_ID, Menu.NONE, "Perfil")
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -109,7 +101,7 @@ public class Feed extends Activity {
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        // Todo: Desautenticar usuário antes de voltar para tela de login
+                        UserSession.close(); // deslogando
 
                         AccessManager am = new AccessManager(Feed.this);
                         am.remove();

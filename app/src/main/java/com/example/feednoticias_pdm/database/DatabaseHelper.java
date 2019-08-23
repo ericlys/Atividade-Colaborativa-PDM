@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
 import com.example.feednoticias_pdm.model.NoticiaEntity;
 import com.example.feednoticias_pdm.model.UsuarioEntity;
@@ -55,6 +56,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("Select * from usuario where email=?",new String[]{email});
         if(cursor.getCount()>0)return false;
         else return true;
+    }
+
+    //checar se o email do usuario existe
+    public Boolean atualizarConta(UsuarioEntity user){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sql = "UPDATE usuario " +
+                "SET nome = ?, " +
+                "senha = ? " +
+                "WHERE email = ?;";
+        SQLiteStatement stmt = db.compileStatement(sql);
+        stmt.bindString(1, user.getNome());
+        stmt.bindString(2, user.getSenha());
+        stmt.bindString(3, user.getEmail());
+        stmt.execute();
+        return true;
     }
 
     //Fazer autenticação do usuario;

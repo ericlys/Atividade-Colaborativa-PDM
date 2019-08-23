@@ -19,22 +19,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toolbar;
 import com.example.feednoticias_pdm.database.DatabaseHelper;
+import com.example.feednoticias_pdm.model.UsuarioEntity;
+import com.example.feednoticias_pdm.session.UserSession;
 
 public class Perfil extends Activity {
 
-    private DatabaseHelper db;
     private TextView tv1, tv2, tv3,tv4;
     private LinearLayout ll;
     private Button b1;
     private RelativeLayout relativeLayout;
+
+    private UsuarioEntity user;
 
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //instanciando conexâo
-        db = new DatabaseHelper(this);
+        user = UserSession.getLoggedUser();
+        if(user == null){
+            // caso nao exista usuario salvo na sessao
+            // tratar aqui
+            finish();
+        }
 
         //criando layout principal da página
         relativeLayout = new RelativeLayout(this);
@@ -82,7 +89,7 @@ public class Perfil extends Activity {
         //textView Email
         tv2 = new TextView(this);
         tv2.setId(View.generateViewId());
-        tv2.setText(db.getEmail);
+        tv2.setText(user.getEmail());
         tv2.setTextSize(20);
         ll.addView(tv2);
 
@@ -97,7 +104,7 @@ public class Perfil extends Activity {
         //textView Nome
         tv4 = new TextView(this);
         tv4.setId(View.generateViewId());
-        tv4.setText("ericlys9874");
+        tv4.setText(user.getNome());
         tv4.setTextSize(20);
         tv4.setPadding(0,0,0,100);
         ll.addView(tv4);
@@ -122,4 +129,12 @@ public class Perfil extends Activity {
         });
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tv2.setText(user.getEmail());
+        tv4.setText(user.getNome());
+    }
+
 }
