@@ -121,15 +121,17 @@ public class Cadastro extends Activity {
                         if(checarEmail==true){
                             Boolean insert = db.inserir(s1,s2,s3);
                             if(insert==true){
-                                Toast.makeText(getApplicationContext(),"Registrado com sucesso",Toast.LENGTH_SHORT).show();
                                 onBackPressed();
+                                Toast.makeText(getApplicationContext(),"Registrado com sucesso",Toast.LENGTH_SHORT).show();
                             }
                         }
                         else{
                             Toast.makeText(getApplicationContext(),"Email já registrado", Toast.LENGTH_SHORT).show();
                         }
+                    }else {
+                        Toast.makeText(getApplicationContext(),"Senhas não correspondem", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(getApplicationContext(),"Senhas não correspondem", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });

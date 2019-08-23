@@ -32,7 +32,6 @@ import com.example.feednoticias_pdm.adapter.NoticiaAdapter;
 import com.example.feednoticias_pdm.database.DatabaseHelper;
 import com.example.feednoticias_pdm.database.configuration.AccessManager;
 import com.example.feednoticias_pdm.model.NoticiaEntity;
-import com.example.feednoticias_pdm.session.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,8 +100,8 @@ public class Feed extends Activity {
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        UserSession.close(); // deslogando
 
+                // Todo: Desautenticar usuário antes de voltar para tela de login
                         AccessManager am = new AccessManager(Feed.this);
                         am.remove();
                         Intent loginIntent = new Intent(Feed.this, Login.class);

@@ -4,23 +4,22 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toolbar;
+
 import com.example.feednoticias_pdm.database.DatabaseHelper;
+import com.example.feednoticias_pdm.database.configuration.AccessDTO;
+import com.example.feednoticias_pdm.database.configuration.AccessManager;
 import com.example.feednoticias_pdm.model.UsuarioEntity;
-import com.example.feednoticias_pdm.session.UserSession;
 
 public class Perfil extends Activity {
 
@@ -28,6 +27,7 @@ public class Perfil extends Activity {
     private LinearLayout ll;
     private Button b1;
     private RelativeLayout relativeLayout;
+    private DatabaseHelper db;
 
     private UsuarioEntity user;
 
@@ -36,7 +36,12 @@ public class Perfil extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        user = UserSession.getLoggedUser();
+        AccessDTO dto;
+        AccessManager tm = new AccessManager(this);
+        dto = tm.get();
+        //instanciando conexâo
+        db = new DatabaseHelper(this);
+        user = db.buscarUsuario(dto.getEmail());
         if(user == null){
             // caso nao exista usuario salvo na sessao
             // tratar aqui
@@ -125,6 +130,7 @@ public class Perfil extends Activity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(Perfil.this, Editar.class));
+                finish();
             }
         });
 

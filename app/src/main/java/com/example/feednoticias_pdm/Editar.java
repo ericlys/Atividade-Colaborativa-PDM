@@ -15,8 +15,9 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.example.feednoticias_pdm.database.DatabaseHelper;
+import com.example.feednoticias_pdm.database.configuration.AccessDTO;
+import com.example.feednoticias_pdm.database.configuration.AccessManager;
 import com.example.feednoticias_pdm.model.UsuarioEntity;
-import com.example.feednoticias_pdm.session.UserSession;
 
 public class Editar extends Activity {
 
@@ -32,7 +33,12 @@ public class Editar extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        user = UserSession.getLoggedUser();
+        AccessDTO dto;
+        AccessManager tm = new AccessManager(this);
+        dto = tm.get();
+        //instanciando conexâo
+        db = new DatabaseHelper(this);
+        user = db.buscarUsuario(dto.getEmail());
         if(user == null){
             finish();
         }
@@ -42,8 +48,7 @@ public class Editar extends Activity {
         ll.setOrientation(LinearLayout.VERTICAL);
         setContentView(ll);
 
-        //instanciando conexâo
-        db = new DatabaseHelper(this);
+
 
         //add toolbar
         Toolbar toolbar = new Toolbar(this);
